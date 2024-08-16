@@ -52,16 +52,14 @@ typedef u32 uptr;
 #endif
 
 /* Colors */
-#define COLOR_RED    0xFFFF0000
-#define COLOR_ORANGE 0xFFFFA500
-#define COLOR_YELLOW 0xFFFDE100
-#define COLOR_GREEN  0xFF00CC00
-#define COLOR_BLUE   0xFF00BFFF
-#define COLOR_VIOLET 0xFF6A6ACD
-#define COLOR_SILVER 0xFFC3C3C3
-#define COLOR_WHITE  0xFFFFFFFF
+#define COLOR_RED    0xFFE70000
+#define COLOR_ORANGE 0xFFFF8C00
+#define COLOR_YELLOW 0xFFFFFF40
+#define COLOR_GREEN  0xFF40FF00
+#define COLOR_BLUE   0xFF00DDFF
+#define COLOR_VIOLET 0xFF8040FF
 
-static const u32 colors[8] = {COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN, COLOR_BLUE, COLOR_VIOLET, COLOR_SILVER, COLOR_WHITE};
+static const u32 colors[6] = {COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN, COLOR_BLUE, COLOR_VIOLET};
 
 /* Important */
 #define false 0
@@ -162,7 +160,7 @@ typedef struct __attribute__((__packed__)) _boot_cfg_t
 	};
 } boot_cfg_t;
 
-static_assert(sizeof(boot_cfg_t) == 0x84, "Boot cfg Speichergroesse ist falsch!");
+static_assert(sizeof(boot_cfg_t) == 0x84, "Boot cfg storage size is wrong!");
 
 typedef struct __attribute__((__packed__)) _ipl_ver_meta_t
 {
