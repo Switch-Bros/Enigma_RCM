@@ -101,7 +101,7 @@ int launch_payload(char *path, bool clear_screen)
 		if (f_open(&fp, path, FA_READ))
 		{
 			gfx_con.mute = false;
-			EPRINTFARGS("Payload wird vermisst!\n(%s)", path);
+			EPRINTFARGS("Payload nicht gefunden!\n(%s)", path);
 
 			goto out;
 		}
@@ -199,14 +199,14 @@ void launch_tools()
 
 			ments[0].type = MENT_BACK;
 			ments[0].caption = "Zurueck";
-			ments[0].color = colors[6];
+			ments[0].color = colors[(color_idx++) % 6];
 			ments[1].type = MENT_CHGLINE;
-			ments[1].color = colors[6];
+			ments[1].color = colors[(color_idx++) % 6];
 			if (!f_stat("sd:/atmosphere/reboot_payload.bin", NULL))
 			{
 				ments[i_off].type = INI_CHOICE;
 				ments[i_off].caption = "reboot_payload.bin";
-				ments[i_off].color = colors[6];
+				ments[i_off].color = colors[(color_idx++) % 6];
 				ments[i_off].data = "sd:/atmosphere/reboot_payload.bin";
 				i_off++;
 			}
@@ -214,7 +214,7 @@ void launch_tools()
 			{
 				ments[i_off].type = INI_CHOICE;
 				ments[i_off].caption = "ReiNX.bin";
-				ments[i_off].color = colors[6];
+				ments[i_off].color = colors[(color_idx++) % 6];
 				ments[i_off].data = "sd:/ReiNX.bin";
 				i_off++;
 			}
@@ -225,7 +225,7 @@ void launch_tools()
 					break;
 				ments[i + i_off].type = INI_CHOICE;
 				ments[i + i_off].caption = &filelist[i * 256];
-				ments[i + i_off].color = colors[6];
+				ments[i + i_off].color = colors[(color_idx++) % 6];
 				ments[i + i_off].data = &filelist[i * 256];
 
 				i++;
@@ -354,7 +354,7 @@ ment_t ment_top[] = {
 	MDEF_HANDLER("Amiibo Keys auslesen", dump_amiibo_keys, colors[3]),
 	MDEF_MENU("Mariko Partials auslesen (nach Neustart)", &menu_partials, colors[3]),
 	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
-	MDEF_HANDLER("Payloads...", launch_tools, colors[4]),
+	MDEF_HANDLER("Payload starten", launch_tools, colors[4]),
 	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
 	MDEF_HANDLER("Neustart (HEKATE)", launch_hekate, colors[2]),
 	MDEF_HANDLER_EX("Neustart (OFW)", &STATE_REBOOT_BYPASS_FUSES, power_set_state_ex, colors[2]),
