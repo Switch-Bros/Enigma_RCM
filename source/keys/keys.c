@@ -260,9 +260,9 @@ static bool _get_titlekeys_from_save(u32 buf_size, const u8 *save_mac_key, title
 
     if (is_personalized) {
         titlekey_save_path[25] = '2';
-        gfx_printf("\n%k Persoenliche...         ", colors[color_idx % 6]);
+        gfx_printf("\n%k Persoenliche...   ", colors[color_idx % 6]);
     } else {
-        gfx_printf("\n%k Standard...             ", colors[color_idx % 6]);
+        gfx_printf("\n%k Standard...       ", colors[color_idx % 6]);
     }
 
     if (f_open(&fp, titlekey_save_path, FA_READ | FA_OPEN_EXISTING)) {
@@ -304,7 +304,7 @@ static bool _get_titlekeys_from_save(u32 buf_size, const u8 *save_mac_key, title
         }
         offset += br;
     }
-    TPRINTF(" Zaehle Titlekeys...     ");
+    TPRINTF(" Zaehle Titlekeys...");
 
     if (!save_open_file(save_ctx, &ticket_file, ticket_bin_path, OPEN_MODE_READ)) {
         EPRINTF("ticket.bin kann im Speicher nicht gefunden werden.");
@@ -334,9 +334,9 @@ static bool _get_titlekeys_from_save(u32 buf_size, const u8 *save_mac_key, title
     gfx_con_setpos(0, save_y);
 
     if (is_personalized) {
-        TPRINTFARGS("\n%k Persoenliche...         ", colors[(color_idx++) % 6]);
+        TPRINTFARGS("\n%k Persoenliche...   ", colors[(color_idx++) % 6]);
     } else {
-        TPRINTFARGS("\n%k Standard...             ", colors[(color_idx++) % 6]);
+        TPRINTFARGS("\n%k Standard...       ", colors[(color_idx++) % 6]);
     }
 
     gfx_printf("\n\n\n");
@@ -389,7 +389,7 @@ static bool _derive_sd_seed(key_storage_t *keys) {
     }
     f_close(&fp);
 
-    TPRINTFARGS("%k SD Seed...              ", colors[(color_idx++) % 6]);
+    TPRINTFARGS("%k SD Seed...      ", colors[(color_idx++) % 6]);
 
     return true;
 }
@@ -471,8 +471,7 @@ static void _derive_emmc_keys(key_storage_t *keys, titlekey_buffer_t *titlekey_b
 // The security engine supports partial key override for locked keyslots
 // This allows for a manageable brute force on a PC
 // Then the Mariko AES class keys, KEK, BEK, unique SBK and SSK can be recovered
-int save_mariko_partial_keys(u32 start, u32 count, bool append) {
-    const char *keyfile_path = "sd:/switch/partialaes.keys";
+int save_mariko_partial_keys(const char *keyfile_path, u32 start, u32 count, bool append) {
     if (!f_stat(keyfile_path, NULL)) {
         f_unlink(keyfile_path);
     }
@@ -566,7 +565,7 @@ int save_mariko_partial_keys(u32 start, u32 count, bool append) {
     return 0;
 }
 
-static void _save_keys_to_sd(key_storage_t *keys, titlekey_buffer_t *titlekey_buffer, bool is_dev) {
+static void _save_keys_to_sd(const char *keyfile_dir, key_storage_t *keys, titlekey_buffer_t *titlekey_buffer, bool is_dev) {
     if (!sd_mount()) {
         EPRINTF("Einbinden der SD-Karte fehlgeschlagen.");
         return;
@@ -650,9 +649,10 @@ static void _save_keys_to_sd(key_storage_t *keys, titlekey_buffer_t *titlekey_bu
     gfx_printf("\n%k Es wurden %d %s Keys gefunden.\n\n", colors[(color_idx++) % 6], _key_count, is_dev ? "dev" : "prod");
     gfx_printf("%k Gefunden ueber Master_Key_%02x.\n\n", colors[(color_idx++) % 6], KB_FIRMWARE_VERSION_MAX);
 
-    f_mkdir("sd:/switch");
+    f_mkdir(keyfile_dir);
 
-    const char *keyfile_path = is_dev ? "sd:/switch/dev.keys" : "sd:/switch/prod.keys";
+    char keyfile_path[FF_LFN_BUF];
+    s_printf(keyfile_path, "%s/%s", keyfile_dir, is_dev ? "dev.keys" : "prod.keys");
 
     FILINFO fno;
     if (!sd_save_to_file(text_buffer, strlen(text_buffer), keyfile_path) && !f_stat(keyfile_path, &fno)) {
@@ -678,7 +678,7 @@ static void _save_keys_to_sd(key_storage_t *keys, titlekey_buffer_t *titlekey_bu
         s_printf(titlekey_text[i].newline, "\n");
     }
 
-    keyfile_path = "sd:/switch/title.keys";
+    s_printf(keyfile_path, "%s/%s", keyfile_dir, "title.keys");
     if (!sd_save_to_file(text_buffer, strlen(text_buffer), keyfile_path) && !f_stat(keyfile_path, &fno)) {
         gfx_printf("%k Es wurden %d Bytes in\n %s geschrieben\n\n", colors[(color_idx++) % 6], (u32)fno.fsize, keyfile_path);
     } else {
@@ -688,7 +688,7 @@ static void _save_keys_to_sd(key_storage_t *keys, titlekey_buffer_t *titlekey_bu
     free(text_buffer);
 }
 
-static void _derive_keys() {
+static void _derive_keys(const char *keyfile_dir) {
     minerva_periodic_training();
 
     if (!check_keyslot_access()) {
@@ -701,7 +701,7 @@ static void _derive_keys() {
     if (emummc_storage_init_mmc()) {
         EPRINTF("MMC konnte nicht initialisiert werden.");
     } else {
-        TPRINTFARGS("%k MMC Init...             ", colors[(color_idx++) % 6]);
+        TPRINTFARGS("%k MMC Init...     ", colors[(color_idx++) % 6]);
     }
 
     minerva_periodic_training();
@@ -744,16 +744,16 @@ static void _derive_keys() {
 
     if (h_cfg.t210b01) {
         // On Mariko, save only relevant key set
-        _save_keys_to_sd(keys, titlekey_buffer, is_dev);
+        _save_keys_to_sd(keyfile_dir, keys, titlekey_buffer, is_dev);
     } else {
         // On Erista, save both prod and dev key sets
-        _save_keys_to_sd(&prod_keys, titlekey_buffer, false);
+        _save_keys_to_sd(keyfile_dir, &prod_keys, titlekey_buffer, false);
         _key_count = 0;
-        _save_keys_to_sd(&dev_keys, NULL, true);
+        _save_keys_to_sd(keyfile_dir, &dev_keys, NULL, true);
     }
 }
 
-void derive_amiibo_keys() {
+void derive_amiibo_keys(const char *keyfile_dir) {
     minerva_change_freq(FREQ_1600);
 
     bool is_dev = fuse_read_hw_state() == FUSE_NX_HW_STATE_DEV;
@@ -792,7 +792,8 @@ void derive_amiibo_keys() {
     if (memcmp(hash, is_dev ? nfc_blob_hash_dev : nfc_blob_hash, sizeof(hash)) != 0) {
         EPRINTF("Amiibo-Hash stimmt nicht ueberein. Ueberspringe Speicherung.");
     } else {
-        const char *keyfile_path = is_dev ? "sd:/switch/key_dev.bin" : "sd:/switch/key_retail.bin";
+        char keyfile_path[FF_LFN_BUF];
+        s_printf(keyfile_path, "%s/%s", keyfile_dir, is_dev ? "key_dev.bin" : "key_retail.bin");
 
         if (!sd_save_to_file(&nfc_save_keys[0], sizeof(nfc_save_keys), keyfile_path)) {
             gfx_printf("%k Amiibo keys wurden geschrieben in\n %s\n", colors[6], keyfile_path);
@@ -807,7 +808,7 @@ void derive_amiibo_keys() {
     gfx_clear_grey(0x1B);
 }
 
-void dump_keys() {
+void dump_keys(const char *keyfile_dir) {
     minerva_change_freq(FREQ_1600);
 
     display_backlight_brightness(h_cfg.backlight, 1000);
@@ -823,7 +824,7 @@ void dump_keys() {
 
     start_time = get_tmr_us();
 
-    _derive_keys();
+    _derive_keys(keyfile_dir);
 
     emummc_load_cfg();
     // Ignore whether emummc is enabled.
@@ -837,9 +838,9 @@ void dump_keys() {
     gfx_printf("\n%k  Druecke VOL+ um Screenshot zu erstellen\n  oder eine andere Taste um zum Menue\n  zurueckzukehren.\n\n", colors[(color_idx++) % 6]);
     u8 btn = btn_wait();
     if (btn == BTN_VOL_UP) {
-        int res = save_fb_to_bmp();
+        int res = save_fb_to_bmp(keyfile_dir);
         if (!res) {
-            gfx_printf("%k  Screenshot sd:/switch/enigma_rcm.bmp\n  gespeichert.\n", colors[(color_idx++) % 6]);
+            gfx_printf("%k  Screenshot sd:/switch/enigma_rcm.bmp\n  gespeichert.\n", colors[(color_idx++) % 6], keyfile_dir);
         } else {
             EPRINTF("  Screenshot fehlgeschlagen.\n");
         }

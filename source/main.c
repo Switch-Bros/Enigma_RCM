@@ -44,6 +44,8 @@
 
 #include "keys/keys.h"
 
+#define SD_STORE_PATH "sd:/atmosphere/automatic_backups/dumps"
+
 hekate_config h_cfg;
 boot_cfg_t __attribute__((section ("._boot_cfg"))) b_cfg;
 const volatile ipl_ver_meta_t __attribute__((section ("._ipl_version"))) ipl_ver = {
@@ -293,7 +295,7 @@ void dump_sysnand()
 {
 	h_cfg.emummc_force_disable = true;
 	emu_cfg.enabled = false;
-	dump_keys();
+	dump_keys(SD_STORE_PATH);
 }
 
 void dump_emunand()
@@ -301,12 +303,12 @@ void dump_emunand()
 	if (h_cfg.emummc_force_disable)
 		return;
 	emu_cfg.enabled = true;
-	dump_keys();
+	dump_keys(SD_STORE_PATH);
 }
 
 void dump_amiibo_keys()
 {
-	derive_amiibo_keys();
+	derive_amiibo_keys(SD_STORE_PATH);
 }
 
 void dump_mariko_partial_keys();
@@ -352,11 +354,12 @@ ment_t ment_top[] = {
 	MDEF_HANDLER("Keys aus emuNAND auslesen", dump_emunand, colors[3]),
 	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
 	MDEF_HANDLER("Amiibo Keys auslesen", dump_amiibo_keys, colors[3]),
-	MDEF_MENU("Mariko Partials auslesen (nach Neustart)", &menu_partials, colors[3]),
+	MDEF_MENU("Mariko Partials auslesen (erfordert Neustart)", &menu_partials, colors[3]),
 	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
 	MDEF_HANDLER("Payload starten", launch_tools, colors[4]),
 	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
 	MDEF_HANDLER("Neustart (HEKATE)", launch_hekate, colors[2]),
+	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
 	MDEF_HANDLER_EX("Neustart (OFW)", &STATE_REBOOT_BYPASS_FUSES, power_set_state_ex, colors[2]),
 	MDEF_HANDLER_EX("Neustart (RCM)\n\n", &STATE_REBOOT_RCM, power_set_state_ex, colors[2]),
 	MDEF_HANDLER_EX("Ausschalten", &STATE_POWER_OFF, power_set_state_ex, colors[0]),
@@ -375,7 +378,7 @@ void grey_out_menu_item(ment_t *menu)
 void dump_mariko_partial_keys()
 {
 	if (h_cfg.t210b01) {
-		int res = save_mariko_partial_keys(0, 16, false);
+		int res = save_mariko_partial_keys(SD_STORE_PATH "/partialaes.keys", 0, 16, false);
 		if (res == 0 || res == 3)
 		{
 			// Grey out dumping menu items as the keyslots have been invalidated.
