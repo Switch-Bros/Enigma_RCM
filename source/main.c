@@ -44,8 +44,6 @@
 
 #include "keys/keys.h"
 
-#define SD_STORE_PATH "sd:/atmosphere/automatic_backups/dumps"
-
 hekate_config h_cfg;
 boot_cfg_t __attribute__((section ("._boot_cfg"))) b_cfg;
 const volatile ipl_ver_meta_t __attribute__((section ("._ipl_version"))) ipl_ver = {
@@ -103,7 +101,7 @@ int launch_payload(char *path, bool clear_screen)
 		if (f_open(&fp, path, FA_READ))
 		{
 			gfx_con.mute = false;
-			EPRINTFARGS("Payload nicht gefunden!\n(%s)", path);
+			EPRINTFARGS("Payload wird vermisst!\n(%s)", path);
 
 			goto out;
 		}
@@ -201,14 +199,14 @@ void launch_tools()
 
 			ments[0].type = MENT_BACK;
 			ments[0].caption = "Zurueck";
-			ments[0].color = colors[(color_idx++) % 6];
+			ments[0].color = colors[6];
 			ments[1].type = MENT_CHGLINE;
-			ments[1].color = colors[(color_idx++) % 6];
+			ments[1].color = colors[6];
 			if (!f_stat("sd:/atmosphere/reboot_payload.bin", NULL))
 			{
 				ments[i_off].type = INI_CHOICE;
 				ments[i_off].caption = "reboot_payload.bin";
-				ments[i_off].color = colors[(color_idx++) % 6];
+				ments[i_off].color = colors[6];
 				ments[i_off].data = "sd:/atmosphere/reboot_payload.bin";
 				i_off++;
 			}
@@ -216,7 +214,7 @@ void launch_tools()
 			{
 				ments[i_off].type = INI_CHOICE;
 				ments[i_off].caption = "ReiNX.bin";
-				ments[i_off].color = colors[(color_idx++) % 6];
+				ments[i_off].color = colors[6];
 				ments[i_off].data = "sd:/ReiNX.bin";
 				i_off++;
 			}
@@ -227,7 +225,7 @@ void launch_tools()
 					break;
 				ments[i + i_off].type = INI_CHOICE;
 				ments[i + i_off].caption = &filelist[i * 256];
-				ments[i + i_off].color = colors[(color_idx++) % 6];
+				ments[i + i_off].color = colors[6];
 				ments[i + i_off].data = &filelist[i * 256];
 
 				i++;
@@ -295,7 +293,7 @@ void dump_sysnand()
 {
 	h_cfg.emummc_force_disable = true;
 	emu_cfg.enabled = false;
-	dump_keys(SD_STORE_PATH);
+	dump_keys();
 }
 
 void dump_emunand()
@@ -303,12 +301,12 @@ void dump_emunand()
 	if (h_cfg.emummc_force_disable)
 		return;
 	emu_cfg.enabled = true;
-	dump_keys(SD_STORE_PATH);
+	dump_keys();
 }
 
 void dump_amiibo_keys()
 {
-	derive_amiibo_keys(SD_STORE_PATH);
+	derive_amiibo_keys();
 }
 
 void dump_mariko_partial_keys();
@@ -354,12 +352,11 @@ ment_t ment_top[] = {
 	MDEF_HANDLER("Keys aus emuNAND auslesen", dump_emunand, colors[3]),
 	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
 	MDEF_HANDLER("Amiibo Keys auslesen", dump_amiibo_keys, colors[3]),
-	MDEF_MENU("Mariko Partials auslesen (erfordert Neustart)", &menu_partials, colors[3]),
+	MDEF_MENU("Mariko Partials auslesen (nach Neustart)", &menu_partials, colors[3]),
 	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
-	MDEF_HANDLER("Payload starten", launch_tools, colors[4]),
+	MDEF_HANDLER("Payloads...", launch_tools, colors[4]),
 	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
 	MDEF_HANDLER("Neustart (HEKATE)", launch_hekate, colors[2]),
-	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
 	MDEF_HANDLER_EX("Neustart (OFW)", &STATE_REBOOT_BYPASS_FUSES, power_set_state_ex, colors[2]),
 	MDEF_HANDLER_EX("Neustart (RCM)\n\n", &STATE_REBOOT_RCM, power_set_state_ex, colors[2]),
 	MDEF_HANDLER_EX("Ausschalten", &STATE_POWER_OFF, power_set_state_ex, colors[0]),
@@ -378,7 +375,7 @@ void grey_out_menu_item(ment_t *menu)
 void dump_mariko_partial_keys()
 {
 	if (h_cfg.t210b01) {
-		int res = save_mariko_partial_keys(SD_STORE_PATH "/partialaes.keys", 0, 16, false);
+		int res = save_mariko_partial_keys(0, 16, false);
 		if (res == 0 || res == 3)
 		{
 			// Grey out dumping menu items as the keyslots have been invalidated.

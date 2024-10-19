@@ -19,11 +19,10 @@
 #include <rtc/max77620-rtc.h>
 #include <storage/nx_sd.h>
 #include <utils/util.h>
-#include <utils/sprintf.h>
 
 #include <string.h>
 
-int save_fb_to_bmp(const char *bmp_path)
+int save_fb_to_bmp()
 {
 	// Disallow screenshots if less than 2s passed.
 	static u32 timer = 0;
@@ -81,10 +80,9 @@ int save_fb_to_bmp(const char *bmp_path)
 
 	sd_mount();
 
-	f_mkdir(bmp_path);
+	f_mkdir("sd:/switch");
 	
-	char path[0x80];
-	s_printf(path, "%s/Enigma_RCM.bmp", bmp_path);
+	char path[0x80] = "sd:/switch/Enigma_RCM.bmp";
 
 	// Save screenshot and log.
 	int res = sd_save_to_file(bitmap, file_size, path);

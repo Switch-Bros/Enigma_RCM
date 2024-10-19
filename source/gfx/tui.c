@@ -73,7 +73,7 @@ void tui_pbar(int x, int y, u32 val, u32 fgcol, u32 bgcol)
 
 	gfx_con_setpos(x, y);
 
-	gfx_printf("%k[%3d%%]%k", fgcol, val, 0xFFCCCCCC);
+	gfx_printf("%k [%3d%%]%k", fgcol, val, 0xFFCCCCCC);
 
 	x += 7 * gfx_con.fntsz;
 
@@ -100,8 +100,8 @@ void *tui_do_menu(menu_t *menu)
 	{
 		gfx_con_setcol(0xFFCCCCCC, 1, 0xFF1B1B1B);
 		gfx_con_setpos(menu->x, menu->y);
-        gfx_printf(" [%kEnigma_RCM%k %d.%d.%d%k]\n\n",
-            colors[2], 0xFF707070, LP_VER_MJ, LP_VER_MN, LP_VER_BF, 0xFFCCCCCC);
+		gfx_printf(" [%kEnigma_RCM%k %d.%d.%d%k]\n\n",
+			colors[2], 0xFF707070, LP_VER_MJ, LP_VER_MN, LP_VER_BF, 0xFFCCCCCC);
 
 		// Skip caption or seperator lines selection.
 		while (menu->ents[idx].type == MENT_CAPTION ||
@@ -154,7 +154,7 @@ void *tui_do_menu(menu_t *menu)
 		if (h_cfg.emummc_force_disable)
 			gfx_printf("%kKeine emuMMC Konfiguration gefunden.\n", 0xFF800000);
 		gfx_con_setpos(0,  1191);
-		gfx_printf("%k VOL: Hoch/Runter\n POWER: Auswahl bestaetigen%k", 0xFFFFFFFF, 0xFFCCCCCC);
+		gfx_printf("%k  VOL:   Hoch/Runter\n  POWER: Auswahl bestaetigen%k", 0xFFFFFFFF, 0xFFCCCCCC);
 
 		display_backlight_brightness(h_cfg.backlight, 1000);
 
