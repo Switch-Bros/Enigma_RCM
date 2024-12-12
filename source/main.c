@@ -65,7 +65,7 @@ volatile nyx_storage_t *nyx_str = (nyx_storage_t *)NYX_STORAGE_ADDR;
 #define COREBOOT_END_ADDR   0xD0000000
 #define COREBOOT_VER_OFF    0x41
 #define CBFS_DRAM_EN_ADDR   0x4003e000
-#define  CBFS_DRAM_MAGIC    0x4452414D // "DRAM"
+#define CBFS_DRAM_MAGIC     0x4452414D // "DRAM"
 
 static void *coreboot_addr;
 
@@ -210,15 +210,6 @@ void launch_tools()
 				ments[i_off].data = "sd:/atmosphere/reboot_payload.bin";
 				i_off++;
 			}
-			if (!f_stat("sd:/ReiNX.bin", NULL))
-			{
-				ments[i_off].type = INI_CHOICE;
-				ments[i_off].caption = "ReiNX.bin";
-				ments[i_off].color = colors[6];
-				ments[i_off].data = "sd:/ReiNX.bin";
-				i_off++;
-			}
-
 			while (true)
 			{
 				if (i > max_entries || !filelist[i * 256])
@@ -334,9 +325,9 @@ ment_t ment_partials[] = {
 	MDEF_CAPTION("werden,  und der  Modchip nuss neu  starten ", colors[2]),
 	MDEF_CAPTION("um die Keys zu reparieren!", colors[2]),
 	MDEF_CHGLINE(),
-	MDEF_CAPTION(" -----------------------------------------  ", colors[6]),
+	MDEF_CAPTION(" -----------------------------------------  ", colors[7]),
 	MDEF_CHGLINE(),
-	MDEF_HANDLER("Mariko Partials auslesen", dump_mariko_partial_keys, colors[4]),
+	MDEF_HANDLER("Mariko Partials auslesen", dump_mariko_partial_keys, colors[3]),
 	MDEF_END()
 };
 
@@ -350,12 +341,12 @@ power_state_t STATE_REBOOT_BYPASS_FUSES = REBOOT_BYPASS_FUSES;
 ment_t ment_top[] = {
 	MDEF_HANDLER("Keys aus sysNAND auslesen", dump_sysnand, colors[3]),
 	MDEF_HANDLER("Keys aus emuNAND auslesen", dump_emunand, colors[3]),
-	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
+	MDEF_CAPTION("\n ----------------------- \n", colors[7]),
 	MDEF_HANDLER("Amiibo Keys auslesen", dump_amiibo_keys, colors[3]),
 	MDEF_MENU("Mariko Partials auslesen (nach Neustart)", &menu_partials, colors[3]),
-	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
+	MDEF_CAPTION("\n ----------------------- \n", colors[7]),
 	MDEF_HANDLER("Payloads...", launch_tools, colors[4]),
-	MDEF_CAPTION("\n ----------------------- \n", colors[6]),
+	MDEF_CAPTION("\n ----------------------- \n", colors[7]),
 	MDEF_HANDLER("Neustart (HEKATE)", launch_hekate, colors[2]),
 	MDEF_HANDLER_EX("Neustart (OFW)", &STATE_REBOOT_BYPASS_FUSES, power_set_state_ex, colors[2]),
 	MDEF_HANDLER_EX("Neustart (RCM)\n\n", &STATE_REBOOT_RCM, power_set_state_ex, colors[2]),
