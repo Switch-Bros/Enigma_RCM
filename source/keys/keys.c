@@ -326,7 +326,7 @@ static bool _get_titlekeys_from_save(u32 buf_size, const u8 *save_mac_key, title
         es_decode_tickets(buf_size, titlekey_buffer, remaining, file_tkey_count, &_titlekey_count, save_x, save_y, &pct, &last_pct, is_personalized);
         remaining -= MIN(buf_size / sizeof(ticket_t), remaining);
     }
-    tui_pbar(save_x, save_y, 100, COLOR_GREEN, 0xFF155500);
+    tui_pbar(save_x, save_y, 100, COLOR_GREEN, 0xFF006600);
     f_close(&fp);
     save_free_contexts(save_ctx);
     free(save_ctx);

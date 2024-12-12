@@ -124,7 +124,7 @@ void es_decode_tickets(u32 buf_size, titlekey_buffer_t *titlekey_buffer, u32 rem
         *pct = (total - remaining) * 100 / total;
         if (*pct > *last_pct && *pct <= 100) {
             *last_pct = *pct;
-            tui_pbar(x, y, *pct, COLOR_GREEN, 0xFF155500);
+            tui_pbar(x, y, *pct, COLOR_GREEN, 0xFF006600);
         }
 
         // This is in case an encrypted volatile ticket is left behind

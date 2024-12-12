@@ -199,9 +199,9 @@ void launch_tools()
 
 			ments[0].type = MENT_BACK;
 			ments[0].caption = "Zurueck";
-			ments[0].color = colors[6];
+			ments[0].color = colors[7];
 			ments[1].type = MENT_CHGLINE;
-			ments[1].color = colors[6];
+			ments[1].color = colors[7];
 			if (!f_stat("sd:/atmosphere/reboot_payload.bin", NULL))
 			{
 				ments[i_off].type = INI_CHOICE;
@@ -216,7 +216,7 @@ void launch_tools()
 					break;
 				ments[i + i_off].type = INI_CHOICE;
 				ments[i + i_off].caption = &filelist[i * 256];
-				ments[i + i_off].color = colors[6];
+				ments[i + i_off].color = colors[7];
 				ments[i + i_off].data = &filelist[i * 256];
 
 				i++;
@@ -303,7 +303,7 @@ void dump_amiibo_keys()
 void dump_mariko_partial_keys();
 
 ment_t ment_partials[] = {
-	MDEF_BACK(colors[6]),
+	MDEF_BACK(colors[7]),
 	MDEF_CHGLINE(),
 	MDEF_CAPTION("Hierbei werden die Ergebnisse geschriebener ", colors[2]),
 	MDEF_CAPTION("Nullen   über   aufeinanderfolgende  32-Bit ", colors[2]),
