@@ -81,6 +81,9 @@ all: $(OUTPUTDIR)/$(TARGET).bin $(LDRDIR)
 clean: $(TOOLS)
 	@rm -rf $(BUILDDIR)
 	@rm -rf $(OUTPUTDIR)
+	@rm -f  $(KEYGENDIR)/$(KEYGENH)
+	@rm -f  $(LDRDIR)/payload_00.h
+	@rm -f  $(LDRDIR)/payload_01.h
 
 $(LDRDIR): $(OUTPUTDIR)/$(TARGET).bin
 	@$(TOOLSLZ)/lz77 $(OUTPUTDIR)/$(TARGET).bin
@@ -102,7 +105,7 @@ $(OUTPUTDIR)/$(TARGET).bin: $(BUILDDIR)/$(TARGET)/$(TARGET).elf $(TOOLS)
 
 $(BUILDDIR)/$(TARGET)/$(TARGET).elf: $(OBJS)
 	@$(CC) $(LDFLAGS) -T $(SOURCEDIR)/link.ld $^ -o $@
-	@echo "Picklock_RCM was built with the following flags:\nCFLAGS:  "$(CFLAGS)"\nLDFLAGS: "$(LDFLAGS)
+	@echo "Enigma_RCM was built with the following flags:\nCFLAGS:  "$(CFLAGS)"\nLDFLAGS: "$(LDFLAGS)
 
 $(OBJS): | $(KEYGENDIR)
 
