@@ -81,7 +81,7 @@ int save_fb_to_bmp()
 	sd_mount();
 
 	f_mkdir("sd:/switch");
-	
+
 	char path[0x80] = "sd:/switch/Enigma_RCM.bmp";
 
 	// Save screenshot and log.
