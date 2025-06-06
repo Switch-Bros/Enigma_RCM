@@ -65,7 +65,7 @@ volatile nyx_storage_t *nyx_str = (nyx_storage_t *)NYX_STORAGE_ADDR;
 #define COREBOOT_END_ADDR   0xD0000000
 #define COREBOOT_VER_OFF    0x41
 #define CBFS_DRAM_EN_ADDR   0x4003e000
-#define CBFS_DRAM_MAGIC     0x4452414D // "DRAM"
+#define  CBFS_DRAM_MAGIC    0x4452414D // "DRAM"
 
 static void *coreboot_addr;
 
@@ -206,7 +206,7 @@ void launch_tools()
 			{
 				ments[i_off].type = INI_CHOICE;
 				ments[i_off].caption = "reboot_payload.bin";
-				ments[i_off].color = colors[6];
+				ments[i_off].color = colors[7];
 				ments[i_off].data = "sd:/atmosphere/reboot_payload.bin";
 				i_off++;
 			}
