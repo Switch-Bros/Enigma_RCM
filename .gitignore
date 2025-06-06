@@ -13,3 +13,4 @@ tools/lz/lz77.exe
 tools/bin2c/bin2c.exe
 tools/lz/lz77.exe
 tools/bin2c/bin2c.exe
+*.exe
